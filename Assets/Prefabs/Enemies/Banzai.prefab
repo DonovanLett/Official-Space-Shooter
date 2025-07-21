@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffe113bb555b36c478b58f8efa650f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 4
+  _speed: 5
   _UIManager: {fileID: 0}
   _animator: {fileID: 0}
   _isAlive: 1
@@ -158,7 +158,7 @@ MonoBehaviour:
   _laserPrefab: {fileID: 4242890320505618056, guid: c6b93c6adccafa34d966aa13c34b4eae,
     type: 3}
   _isPlayerAlive: 1
-  _pointsTheyAreWorth: 40
+  _pointsTheyAreWorth: 25
   _turretOne: {fileID: 6549309029857032735}
   _turretTwo: {fileID: 6549309028482386129}
   _timeBetweenBullets: 0.75
@@ -176,9 +176,12 @@ MonoBehaviour:
   _damageUponPlayerImpact: 1
   _spinningSpeed: 0
   _sideSpeed: 0
+  _sideDirection: {x: 1, y: 0, z: 0}
+  _sideBorders: 0
   _health: 0
-  _waitingSpeed: 2
-  _rammingSpeed: 20
+  _waitingSpeed: 3
+  _sensingDistance: 100
+  _rammingSpeed: 16.5
   _isRamming: 0
   _canDodge: 0
   _dodgeSpeed: 0

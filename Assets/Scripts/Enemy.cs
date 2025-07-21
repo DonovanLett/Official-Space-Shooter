@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 public class Enemy : MonoBehaviour
 {
@@ -13,8 +14,15 @@ public class Enemy : MonoBehaviour
     Animator _animator;
     [SerializeField]
     private bool _isAlive;
+
+
     [SerializeField]
     private int _enemyID;
+
+
+
+
+
     [SerializeField]
     private AudioClip _explosionSoundEffect;
     [SerializeField]
@@ -55,13 +63,24 @@ public class Enemy : MonoBehaviour
     private int _damageUponPlayerImpact;
     
 
-    [Header("SPINNER")]
+    [Header("SPINNER VARIABLES")]
     [SerializeField]
     private float _spinningSpeed;
 
-    [Header("JUMPY")]
+
+
+
+    [Header("JUMPY VARIABLES")]
     [SerializeField]
-    private float _sideSpeed;
+    private float _sideSpeed;                       // How fast it's going horizontally
+    [SerializeField]
+    private Vector3 _sideDirection = Vector3.right; // Which direction it is currently going (left or right)
+    [SerializeField]
+    private float _sideBorders;                     // The X-Position at which point it change directions, whether its Positive or Negative Value
+   
+
+
+
 
     [Header("BRUTE")]
     [SerializeField]
@@ -70,6 +89,8 @@ public class Enemy : MonoBehaviour
     [Header("BANZAI")]
     [SerializeField]
     private float _waitingSpeed;
+    [SerializeField]
+    private float _sensingDistance;
     [SerializeField]
     private float _rammingSpeed;
     [SerializeField]
@@ -101,6 +122,19 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(_enemyID == 2)
+        {
+            bool _goingLeft = (int)Random.Range(0, 2) == 0;
+            if (_goingLeft)
+            {
+                _sideDirection = Vector3.left;
+            }
+            else
+            {
+                _sideDirection = Vector3.right;
+            }
+
+        }
         _camera = GameObject.FindWithTag("MainCamera");
         _UIManager = FindObjectOfType<UIManager>();
         _animator = gameObject.GetComponent<Animator>();
@@ -117,27 +151,45 @@ public class Enemy : MonoBehaviour
     {
         if (_isAlive)
         {
+            
             switch (_enemyID) {
                 default:
                     transform.Translate(Vector3.down * _speed * Time.deltaTime);
                     break;
                 case 1:
+                   // transform.Translate(Vector3.down * _speed * Time.deltaTime);
                     transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, transform.position.y - 50, transform.position.z), _speed * Time.deltaTime);
                     transform.Rotate(0f, 0f, _spinningSpeed, Space.Self);
                     break;
+
+
+
+
+
+
                 case 2:
-                    transform.Translate(Vector3.down * _speed * Time.deltaTime);
-                    transform.Translate(Vector3.right * _sideSpeed * Time.deltaTime);
-                    if (transform.position.x >= 9.626f)
-                    {
-                        _sideSpeed = Mathf.Abs(_sideSpeed) * -1;
-                    }
-                    else if (transform.position.x <= -9.626f)
-                    {
-                        _sideSpeed = Mathf.Abs(_sideSpeed);
-                    }
+                    // Jumpy's Vertical Movement
+                    transform.Translate(Vector3.down * _speed * Time.deltaTime); 
                     
+                    // Jumpy's Horizontal Movement
+                    transform.Translate(_sideDirection * _sideSpeed * Time.deltaTime);
+
+                    // And whenever the X-Position of Jumpy hits one of the designated _sideBorders, whether it be the positive or negative value of it, Jumpy bounces back the other way.
+                    if (transform.position.x >= Mathf.Abs(_sideBorders)) 
+                    {
+                        _sideDirection = Vector3.left;
+                    }
+                    else if (transform.position.x <= -(Mathf.Abs(_sideBorders)))
+                    {
+                        _sideDirection = Vector3.right;
+                    }
                     break;
+
+
+
+
+
+
                 case 5:
                     transform.Translate(Vector3.down * _speed * Time.deltaTime);
                     if (_isDodging)
@@ -146,10 +198,23 @@ public class Enemy : MonoBehaviour
                     }
                     break;
             }
+
+            //Extra Components of Enemies
+           // switch (_enemyID)
+           // {
+
+           // }
+
+
+
             if (transform.position.y < _yPositionForDeath)
             {
                 Destroy(this.gameObject);
             }
+
+
+
+
 
             int _playerMask = LayerMask.GetMask("Player");
             int _powerUpMask = LayerMask.GetMask("PowerUp");
@@ -192,7 +257,8 @@ public class Enemy : MonoBehaviour
                //   Vector2 origin = transform.position;
                 BanzaiSpeedController();
                 Vector2 downDirection = Vector2.down;
-                RaycastHit2D banzaiHit = Physics2D.Raycast(origin, downDirection, 100f, _playerMask);
+                RaycastHit2D banzaiHit = Physics2D.Raycast(origin, downDirection, _sensingDistance, _playerMask);
+                Debug.DrawRay(origin, downDirection);
                 if (banzaiHit.collider != null && banzaiHit.collider.CompareTag("Player"))
                 {
                     _isRamming = true;
@@ -261,32 +327,58 @@ public class Enemy : MonoBehaviour
         _spriteRenderer.color = _originalColor;
     }
 
+
+
     IEnumerator EnemyFire()
     {
         yield return new WaitForSeconds(Random.Range(_minStartPause, _maxStartPause));
 
         while (_isAlive && _isPlayerAlive)
         {
-            _turretOne.GetComponent<Turret>().Fire();
+            _turretOne.GetComponent<Turret>().Fire(); 
+
+            // Every time a bullet it fired, as one is above, if the _enemyID is 2, the direction it is goin changes.
             if (_enemyID == 2) {
-                _sideSpeed *= -1;
+              if(_sideDirection == Vector3.right)
+                {
+                    _sideDirection = Vector3.left;
+                }
+                else if (_sideDirection == Vector3.left)
+                {
+                    _sideDirection = Vector3.right;
+                }
             }
+
+
+
+            // If the Enemy is a Jumpy, instead of listening to the Pause-Between-Each-Turret variable as it usually does, it instead listens to the Random.Range we usually only listen to in between each Fire Round. As we mentioned before, no predictable patterns with Jumpy
             if(_enemyID == 2) { 
-            yield return new WaitForSeconds(Random.Range(_minShotPause, _maxShotPause)); //0.75
+            yield return new WaitForSeconds(Random.Range(_minShotPause, _maxShotPause)); 
             }
             else
             {
-                yield return new WaitForSeconds(_timeBetweenBullets); //0.75
+                yield return new WaitForSeconds(_timeBetweenBullets);
             }
+
+
             if (_isAlive && _isPlayerAlive)
             {
                 _turretTwo.GetComponent<Turret>().Fire();
+
+                // And again, once the other bullet is fire, its direction changes once more.
                 if (_enemyID == 2)
                 {
-                    _sideSpeed *= -1;
+                    if (_sideDirection == Vector3.right)
+                    {
+                        _sideDirection = Vector3.left;
+                    }
+                    else if (_sideDirection == Vector3.left)
+                    {
+                        _sideDirection = Vector3.right;
+                    }
                 }
             }
-            yield return new WaitForSeconds(Random.Range(_minShotPause, _maxShotPause)); //3 and 7
+            yield return new WaitForSeconds(Random.Range(_minShotPause, _maxShotPause));
         }
     }
 

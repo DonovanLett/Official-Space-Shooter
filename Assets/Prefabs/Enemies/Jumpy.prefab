@@ -111,7 +111,7 @@ MonoBehaviour:
   _laserPrefab: {fileID: 4242890320505618056, guid: c6b93c6adccafa34d966aa13c34b4eae,
     type: 3}
   _isPlayerAlive: 1
-  _pointsTheyAreWorth: 20
+  _pointsTheyAreWorth: 75
   _turretOne: {fileID: 8644700030725380985}
   _turretTwo: {fileID: 8644700029885393335}
   _timeBetweenBullets: 0.75
@@ -129,6 +129,8 @@ MonoBehaviour:
   _damageUponPlayerImpact: 1
   _spinningSpeed: 0
   _sideSpeed: 5
+  _sideDirection: {x: 1, y: 0, z: 0}
+  _sideBorders: 9.626
   _health: 0
   _waitingSpeed: 0
   _rammingSpeed: 0

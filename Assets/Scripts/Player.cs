@@ -137,6 +137,10 @@ public class Player : MonoBehaviour
         _damageEffect = _shieldObject.GetComponent<ShieldDamageEffect>();
         _normalSpeed = _speed;
         _timer = FindObjectOfType<Timer>();
+
+
+
+       // StartControls();
     }
 
     // Update is called once per frame
@@ -296,7 +300,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            _shieldStrength--; ///FIX!!!!!!!!!!!!!!!!!!!!!!
+            _shieldStrength--;
             switch (_shieldStrength)
             {
                 case 0:

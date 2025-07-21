@@ -176,6 +176,8 @@ MonoBehaviour:
   _damageUponPlayerImpact: 1
   _spinningSpeed: 5
   _sideSpeed: 0
+  _sideDirection: {x: 1, y: 0, z: 0}
+  _sideBorders: 0
   _health: 0
   _waitingSpeed: 0
   _rammingSpeed: 0
